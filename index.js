@@ -29,7 +29,7 @@ client.on('message', async msg => {
             .GetListByKeyword(query, false, 5, [{type: "video"}])
             .then( res => {
                 let id = res.items[0].id;
-                subProcess.execSync(`yt-dlp --extract-audio --audio-format opus -o "./audio-output/%(id)s.opus" https://www.youtube.com/watch?v=${id}`, (err, stdout, stderr) => {
+                subProcess.execSync(`yt-dlp --extract-audio --audio-format mp3 -o "./audio-output/%(id)s.mp3" https://www.youtube.com/watch?v=${id}`, (err, stdout, stderr) => {
                     if (err) {
                         console.error(err);
                         process.exit(1);
@@ -37,9 +37,11 @@ client.on('message', async msg => {
                 });
                 try {
                     (async () => {
-                        const media = MessageMedia.fromFilePath(`./audio-output/${id}.opus`);
+                        const media = MessageMedia.fromFilePath(`./audio-output/${id}.mp3`);
                         await client.sendMessage(msg.from, media);
-                        subProcess.execSync(`rm audio-output/${id}.opus`);
+                        setTimeout(() => {
+                            subProcess.execSync(`rm audio-output/${id}.mp3`);
+                        }, 100);
                     })();
                 }
                 catch(err) {
