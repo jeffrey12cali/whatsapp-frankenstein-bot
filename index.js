@@ -64,7 +64,7 @@ client.on('message', async msg => {
                     try {
                         (async () => {
                             const media = MessageMedia.fromFilePath(`./audio-output/${id}.mp3`);
-                            await client.sendMessage(msg.from, media);
+                            await msg.reply(media);
                             setTimeout(() => {
                                 subProcess.execSync(`rm audio-output/${id}.mp3`);
                             }, 100);
