@@ -4,7 +4,9 @@
         "start": "node index.js"
     },
     "dependencies": {
+        "booru": "^2.6.4",
         "qrcode-terminal": "^0.12.0",
+        "text-to-image": "^5.2.0",
         "whatsapp-web.js": "^1.22.1",
         "youtube-search-api": "^1.2.1"
     }
