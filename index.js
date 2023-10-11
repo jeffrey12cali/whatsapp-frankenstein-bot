@@ -58,11 +58,21 @@ const sendYtAudio = (url, id, msg) => {
             }
         });
         (async () => {
-            const media = MessageMedia.fromFilePath(`./audio-output/${id}.mp3`);
-            await msg.reply(media);
-            setTimeout(() => {
-                subProcess.execSync(`rm audio-output/${id}.mp3`);
-            }, 100);
+            try {
+                const media = MessageMedia.fromFilePath(`./audio-output/${id}.mp3`);
+                await msg.reply(media);
+                setTimeout(() => {
+                    try {
+                        subProcess.execSync(`rm audio-output/${id}.mp3`);
+                    }
+                    catch (err) {
+                        msg.reply(err.message);
+                    }
+                }, 100);
+            }
+            catch (err) {
+                msg.reply(err.message);
+            }
         })();
     }
     catch (err) {
@@ -206,6 +216,9 @@ client.on('message', async msg => {
                         catch (err) {
                             msg.reply(err.message);
                         }
+                    })
+                    .catch( (err) => {
+                        msg.reply(err.message);
                     });
                 }
             catch (err) {
