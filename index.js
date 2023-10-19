@@ -126,7 +126,8 @@ client.on('message', async msg => {
                         else {
                             msg.reply("Video is live.");
                         }
-                    });
+                    })
+                    .catch( err => msg.reply(err.message) );
             }
             catch (err) {
                 msg.reply(err.message);
@@ -137,7 +138,7 @@ client.on('message', async msg => {
                 youtubesearchapi
                     .GetListByKeyword(query, false, 5, [{type: "video"}])
                     .then( res => {
-                        if (!res.items[0].isLive && !isTime1LongerThanTime2(res.items[0].length.simpleText, "10:00")) {
+                        if (res && res.items.length > 0 && !res.items[0].isLive && !isTime1LongerThanTime2(res.items[0].length.simpleText, "10:00")) {
                             let id = res.items[0].id;
                             sendYtAudio(`https://www.youtube.com/watch?v=${id}`, id, msg);
                         }
@@ -261,6 +262,46 @@ client.on('message', async msg => {
             msg.reply(err.message);
         }
     }
+    else if (msg.body === '!sticker') {
+        if (msg.hasQuotedMsg) {
+            quoted = await msg.getQuotedMessage();
+            if (quoted.hasMedia) {
+                media = await quoted.downloadMedia();
+                try {
+                    msg.reply(media, msg.from, { sendMediaAsSticker: true });
+                }
+                catch (err) {
+                    msg.reply(err);
+                }
+            }
+            else {
+                msg.reply('Este tío es tonto');
+            }
+        }
+        else {
+            msg.reply('Responde la imagen con "!sticker"');
+        }
+    }
+    else if (msg.body === '!photo') {
+        if (msg.hasQuotedMsg) {
+            quoted = await msg.getQuotedMessage();
+            if (quoted.hasMedia) {
+                media = await quoted.downloadMedia();
+                try {
+                    msg.reply(media);
+                }
+                catch (err) {
+                    msg.reply(err);
+                }
+            }
+            else {
+                msg.reply('Este tío es tonto');
+            }
+        }
+        else {
+            msg.reply('Responde la imagen con "!sticker"');
+        }
+    }
     else if (msg.body.startsWith('!ytvid ')) {
         msg.reply("Monday left me broken");
         /*let query = msg.body.substring(7);
@@ -302,6 +343,16 @@ client.on('message', async msg => {
     }
     else if (msg.body === '!callate') {
         const media = MessageMedia.fromFilePath(`./audio/callate.ogg`);
+        if (msg.hasQuotedMsg) {
+            let source_msg = await msg.getQuotedMessage();
+            await source_msg.reply(media);
+        }
+        else {
+            await msg.reply(media);
+        }
+    }
+    else if (msg.body === '!israel') {
+        const media = MessageMedia.fromFilePath(`./audio/chavez_israel.mp3`);
         if (msg.hasQuotedMsg) {
             let source_msg = await msg.getQuotedMessage();
             await source_msg.reply(media);
