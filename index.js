@@ -242,21 +242,26 @@ client.on('message', async msg => {
             else {
                 text = input.slice(1).join(" ");
             }
-            const bgColor = ~~(360 * Math.random());
-            const dataUri = textToImage.generateSync(text, {
-                bgColor: randomHSLAbg(bgColor),
-                fontFamily: 'Felt Tip Roman',
-                fontSize: font_size,
-                lineHeight: font_size+20,
-                textColor:randomHSLAtxt(bgColor) ,
-                customHeight: 683,
-                maxWidth: 683,
-                textAlign: 'center',
-                verticalAlign: 'center',
-                margin: 0
-            });
-            const media = new MessageMedia('image/png', dataUri.substring(22));
-            msg.reply(media);
+            if (font_size < 0 || font_size > 1000 || text.length > 1000) {
+                msg.reply("Abrite de aquí maricona, que todo bien. Ya perdiste");
+            }
+            else {
+                const bgColor = ~~(360 * Math.random());
+                const dataUri = textToImage.generateSync(text, {
+                    bgColor: randomHSLAbg(bgColor),
+                    fontFamily: 'Felt Tip Roman',
+                    fontSize: font_size,
+                    lineHeight: font_size+20,
+                    textColor:randomHSLAtxt(bgColor) ,
+                    customHeight: 683,
+                    maxWidth: 683,
+                    textAlign: 'center',
+                    verticalAlign: 'center',
+                    margin: 0
+                });
+                const media = new MessageMedia('image/png', dataUri.substring(22));
+                msg.reply(media);
+            }
         }
         catch (err) {
             msg.reply(err.message);
