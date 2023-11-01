@@ -368,7 +368,7 @@ client.on('message', async msg => {
     }
 
     else if (msg.body === '!nomequemes') {
-        const media = MessageMedia.fromFilePath(`./audio/nomequemes.mp4`);
+        const media = MessageMedia.fromFilePath(`./audio/nomequemes.mp3`);
         if (msg.hasQuotedMsg) {
             let source_msg = await msg.getQuotedMessage();
             await source_msg.reply(media);
