@@ -366,6 +366,17 @@ client.on('message', async msg => {
             await msg.reply(media);
         }
     }
+
+    else if (msg.body === '!nomequemes') {
+        const media = MessageMedia.fromFilePath(`./audio/nomequemes.mp4`);
+        if (msg.hasQuotedMsg) {
+            let source_msg = await msg.getQuotedMessage();
+            await source_msg.reply(media);
+        }
+        else {
+            await msg.reply(media);
+        }
+    }
 });
 
 client.initialize();
