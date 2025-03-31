@@ -1,0 +1,21 @@
+const { Context } = require('./Context');
+const { Test, Test_Help } = require('./Test');
+const { Base } = require('./Base');
+const { Blank } = require('./Blank');
+const { Booru, Booru_List, Booru_Help, Booru_List_Help } = require('./Booru');
+const { Chef, Chef_Help } = require('./Chef');
+const { Help } = require('./Help');
+const { Photo, Photo_Help } = require('./Photo');
+const { Sticker, Sticker_Help } = require('./Sticker');
+const { YtAud, YtAud_Help } = require('./YtAud');
+const { PalAdmin, PalAdmin_Help } = require('./PalAdmin');
+const { YtVid, YtVid_Help} = require('./YtVid');
+const { VideoSender, VideoSender_Help} = require('./VideoSender');
+const { AudioSender, AudioSender_Help} = require('./AudioSender');
+const { Trim, Trim_Help } = require('./Trim');
+const { Aud, Aud_Help } = require('./Aud');
+const { ImgVid, ImgVid_Help } = require('./ImgVid');
+const { Chat, Chat_Help } = require('./Chat');
+const { Everyone, Everyone_Help } = require('./Everyone');
+
+module.exports = { Context, Test, Test_Help, Base, Blank, Booru, Booru_List, Booru_Help, Booru_List_Help, Chef, Chef_Help, Help, Photo, Photo_Help, Sticker, Sticker_Help, YtAud, YtAud_Help, PalAdmin, PalAdmin_Help, YtVid, YtVid_Help, VideoSender, VideoSender_Help, AudioSender, AudioSender_Help, Trim, Trim_Help, Aud, Aud_Help, ImgVid, ImgVid_Help, Chat, Chat_Help, Everyone, Everyone_Help }
