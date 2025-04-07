@@ -10,7 +10,7 @@ class MediaSender extends Base {
         if (file !== undefined)
             await sendMedia(msg, obj.base_path + '/' + file);
         else
-            msg.reply("No se encontró el archivo solicitado en el sistema de archivos")
+            msg.reply()
         this.completed = true;
     }
 

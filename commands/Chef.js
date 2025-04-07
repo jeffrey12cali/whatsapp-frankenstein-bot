@@ -1,6 +1,7 @@
 const { Base } = require('./Base');
 const textToImage = require("text-to-image");
 const { MessageMedia } = require('whatsapp-web.js');
+const client_messages = require('../config/messages');
 
 function randomHSLAbg(bgColor){
     return `hsla(${bgColor}, 70%,  80%, 0.8)`
@@ -34,7 +35,7 @@ _Ejemplo2_: !chef size 90 el gobierno te vigila, mantén puertas y ventanas cerr
                 text = input.slice(1).join(" ");
             }
             if (font_size < 0 || font_size > 1000 || text.length > 1000) {
-                msg.reply("Abrite de aquí maricona, que todo bien. Ya perdiste");
+                msg.reply(client_messages["chef_invalid_length"]);
                 this.completed = true;
             }
             else {

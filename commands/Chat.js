@@ -1,4 +1,5 @@
 const { Base } = require('./Base');
+const client_messages = require('../config/messages');
 
 const payload = {
     model: "mistral:7b-instruct",
@@ -30,7 +31,7 @@ _Ejemplo_: !chat`;
             const response = await fetch(`http://${HOST}:11434/api/chat`, {
                 method: "POST",
                 body: JSON.stringify(mod_payload)
-            }).catch((err) => {console.error(err); msg.reply("El chat se encuentra apagado.")});;
+            }).catch((err) => {console.error(err); msg.reply(client_messages["chat_is_offline"])});;
             const res_json = await response.json();
             if (response.status == 200) {
                 msg.reply(res_json.message.content);
@@ -38,7 +39,7 @@ _Ejemplo_: !chat`;
                 await user_model.updateOllamaJson(msg, mod_payload.messages);
             }
             else {
-                msg.reply("Error al obtener respuesta");
+                msg.reply(client_messages["chat_error_on_response"]);
             }
         }
         catch (err) {

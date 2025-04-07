@@ -1,11 +1,14 @@
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const mariadb = require('mariadb');
+const http = require('http');
 
 // Local
 const { User } = require('./models/User');
 const commands = require('./commands');
 const {host, user, password, database} = require('./config/config');
+const blacklist = require('./config/blacklist');
+const client_messages = require('./config/messages');
 const { generateHelpText, generateTeque, verifyBlacklist } = require('./utils/utils');
 
 // Global constants
@@ -30,8 +33,6 @@ const user_model = new User(pool);
 const context = new commands.Context(command_obj.Test, user_model);
 
 const help_text = generateHelpText(commands);
-
-const blacklist = ["573218265531"];
 
 const user_cache = {};
 
@@ -60,11 +61,21 @@ function runCommand(name, cmd_class, msg, parm_obj) {
 }
 
 client.on('qr', qr => {
-    qrcode.generate(qr, {small: true});
+    qrcode.generate(qr, {small: true}, function (qrcode) {
+        const server = http.createServer((req, res) => {
+            res.writeHead(200, { "Content-type": "text/plain" });
+            res.end(qrcode);
+        });
+        server.listen(3000, () => {
+            console.log(client_messages["server_running"]);
+            console.log(client_messages["refresh_reminder"]);
+        });
+    });
+
 });
 
 client.on('ready', () => {
-    console.log('Client is ready!');
+    console.log(client_messages["client_ready"]);
 });
 
 client.on('message_revoke_everyone', async (msg, revoked_msg) => {
@@ -101,13 +112,13 @@ client.on('message_revoke_everyone', async (msg, revoked_msg) => {
             revoked_msg.reply(revoked_msg.body, revoked_msg.to, {mentions: [revoked_msg.id.participant]});
         }
         else {
-            revoked_msg.reply(`Esto fue lo que borraste, @${contact.id.user}: "_${revoked_msg.body}_"`, revoked_msg.from, {mentions: [contact.id._serialized]});
+            revoked_msg.reply(`${client_messages["revoked_msg_1"]}, @${contact.id.user}: "_${revoked_msg.body}_"`, revoked_msg.from, {mentions: [contact.id._serialized]});
         }
-        revoked_msg.reply('Pai, no me esté borrando los mensajes. @' + (contact.isMe ? revoked_msg.id.participant.slice(0,-5) : contact.id.user), contact.isMe ? revoked_msg.to : revoked_msg.from, {mentions: [contact.isMe ? revoked_msg.id.participant : contact.id._serialized]});
+        revoked_msg.reply(`${client_messages["revoked_msg_2"]}. @` + (contact.isMe ? revoked_msg.id.participant.slice(0,-5) : contact.id.user), contact.isMe ? revoked_msg.to : revoked_msg.from, {mentions: [contact.isMe ? revoked_msg.id.participant : contact.id._serialized]});
     }
     catch (err) {
         console.log(err);
-        msg.reply("No fue posible recuperar el mensaje eliminado.");
+        msg.reply(client_messages["revoked_msg_3"]);
     }
 });
 

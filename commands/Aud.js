@@ -1,5 +1,6 @@
 const { MessageMedia } = require('whatsapp-web.js');
 const { getMediaFormat, saveBase64, extractAudio } = require('../utils/media-utils');
+const client_messages = require('../config/messages');
 const { Base } = require('./Base');
 const subProcess = require("child_process")
 
@@ -23,7 +24,7 @@ _Ejemplo_: !aud`;
                 const media = await quoted.downloadMedia();
                 const extension = getMediaFormat(media.mimetype.split("/")[1].split(";")[0])
                 if (extension !== "mp4") {
-                    msg.reply('El mensaje al que responde no es un video.');
+                    msg.reply(client_messages["aud_no_vid_reply"]);
                     this.completed = true;
                 }
                 else {
@@ -50,12 +51,12 @@ _Ejemplo_: !aud`;
                 }
             }
             else {
-                msg.reply('Este tío es tonto');
+                msg.reply(client_messages["recurrent_error_msg"]);
                 this.completed = true;
             }
         }
         else {
-            msg.reply('Responde al video con "!aud"');
+            msg.reply();
             this.completed = true;
         }
     }

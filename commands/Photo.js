@@ -1,4 +1,5 @@
 const { Base } = require('./Base');
+const client_messages = require('../config/messages');
 
 class Photo extends Base {
 
@@ -25,12 +26,12 @@ _Ejemplo_: !photo`;
                 }
             }
             else {
-                msg.reply('Este tío es tonto');
+                msg.reply(client_messages["recurrent_error_msg"]);
                 this.completed = true;
             }
         }
         else {
-            msg.reply('Responde al video/sticker/gif con "!photo"');
+            msg.reply(client_messages["photo_validation"]);
             this.completed = true;
         }
     }

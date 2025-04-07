@@ -1,4 +1,5 @@
 const { Base } = require('./Base');
+const client_messages = require('../config/messages');
 
 class Test extends Base{
 
@@ -13,7 +14,7 @@ _Ejemplo_: !test`;
     init(msg, obj) {
         this.completed = false;
         try {
-            msg.reply('Callate. Callate. Callate la hijueputa jeta');
+            msg.reply(client_messages["test"]);
             this.completed = true;
         }
         catch (e) {

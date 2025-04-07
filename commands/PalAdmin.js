@@ -1,5 +1,6 @@
 const { Base } = require('./Base');
 const fs = require('node:fs');
+const client_messages = require('../config/messages');
 
 class PalAdmin extends Base{
 
@@ -23,15 +24,15 @@ _Ejemplo_: !paladmin pa cuando la sesión de gooning?`;
                 const date = new Date(timestamp * 1000);
                 const line = `|${date.toString()}| ${name} (${number}): ${body}\n`;
                 fs.writeFileSync('./texts/paladmin.txt', line, { flag: 'a' });
-                msg.reply("El mensaje ha sido enviado.");
+                msg.reply(client_messages["paladmin_msg_sent"]);
                 this.completed = true;
             } catch (err) {
-                msg.reply("El mensaje no ha podido ser enviado. Intenta de nuevo.");
+                msg.reply(client_messages["paladmin_not_sent"]);
                 console.log(err);
             }
         }
         else {
-            msg.reply("El admin únicamente puede leer texto.");
+            msg.reply(client_messages["paladmin_text_validation"]);
             this.completed = true;
         }
     }

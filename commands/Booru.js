@@ -2,6 +2,7 @@ const { MessageMedia } = require('whatsapp-web.js');
 const Boorus = require("booru");
 const { Base } = require('./Base');
 const { getJson } = require('../utils/utils');
+const client_messages = require('../config/messages');
 
 class Booru extends Base {
 
@@ -19,7 +20,7 @@ _Ejemplo2_: !booru r34 short_hair tummy tomboy`;
         this.completed = false;
         let inputs = msg.body.split(" ");
         if (inputs.length < 3) {
-            msg.reply("Comando inválido. Este tío es tonto");
+            msg.reply(client_messages["booru_invalid_command"]);
         }
         else {
             let booruAlias = inputs[1];
@@ -28,7 +29,7 @@ _Ejemplo2_: !booru r34 short_hair tummy tomboy`;
                 const posts = await Boorus.search(booruAlias, tags, { limit: 3, random: true });
                     try {
                         if (posts && posts.length > 0) {
-                            msg.reply(`Enviando 3 resultados de ${tags.join(", ")} en ${booruAlias}.`);
+                            msg.reply(`${client_messages["booru_sending_results"]} ${tags.join(", ")} en ${booruAlias}.`);
                             for (let post of posts) {
                                 const media = await MessageMedia.fromUrl(post.fileUrl);
                                 await client.sendMessage(msg.from, media);
@@ -36,7 +37,7 @@ _Ejemplo2_: !booru r34 short_hair tummy tomboy`;
                             }
                         }
                         else {
-                            msg.reply("No hay resultados");
+                            msg.reply(client_messages["booru_no_results"]);
                             this.completed = true;
                         }
                     }
@@ -63,7 +64,7 @@ _Ejemplo_: !booru list`;
     async init(msg, obj) {
         this.completed = false;
         const {sfw_boorus, nsfw_boorus} = obj;
-        let textBoorus = "Lista de Boorus disponibles:\n";
+        let textBoorus = `${client_messages["booru_availability_list"]}\n`;
         if (sfw_boorus.length == 0 && nsfw_boorus.length == 0) {
             let booruJson = await getJson('https://raw.githubusercontent.com/AtoraSuunva/booru/master/src/sites.json');
             for (const booruUrl in booruJson) {

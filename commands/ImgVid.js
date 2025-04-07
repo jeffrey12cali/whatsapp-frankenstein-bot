@@ -1,7 +1,8 @@
 const { MessageMedia } = require('whatsapp-web.js');
 const { getMediaFormat, saveBase64, mergeImgAudio, isVerticalVideo } = require('../utils/media-utils');
+const client_messages = require('../config/messages');
 const { Base } = require('./Base');
-const subProcess = require("child_process")
+const subProcess = require("child_process");
 
 VIDEO_OUTPUT = "./video-output";
 AUDIO_OUTPUT = "./audio-output";
@@ -25,7 +26,7 @@ _Utilización_: Responde al audio con una imagen y en el mismo mensaje de la ima
                 const img_extension = getMediaFormat(img_media.mimetype.split("/")[1].split(";")[0])
                 const aud_extension = getMediaFormat(aud_media.mimetype.split("/")[1].split(";")[0])
                 if (img_extension !== "jpeg" || (aud_extension !== "mp3" && aud_extension !== "ogg")) {
-                    msg.reply('Formatos incorrectos.');
+                    msg.reply(client_messages["imgvid_invalid_formats"]);
                     this.completed = true;
                 }
                 else {
@@ -33,7 +34,7 @@ _Utilización_: Responde al audio con una imagen y en el mismo mensaje de la ima
                     const img_filename = await msg.from + now + "." + img_extension;
                     const aud_filename = await msg.from + now + "." + aud_extension;
                     try {
-                        msg.reply('Procesando video...');
+                        msg.reply(client_messages["imgvid_processing"]);
                         await saveBase64(img_media.data, img_filename, VIDEO_OUTPUT);
                         const vertical = await isVerticalVideo(img_filename, VIDEO_OUTPUT);
                         await saveBase64(aud_media.data, aud_filename, AUDIO_OUTPUT);
@@ -58,12 +59,12 @@ _Utilización_: Responde al audio con una imagen y en el mismo mensaje de la ima
                 }
             }
             else {
-                msg.reply('Este tío es tonto');
+                msg.reply(client_messages["recurrent_error_msg"]);
                 this.completed = true;
             }
         }
         else {
-            msg.reply('Responde al video con "!aud"');
+            msg.reply(client_messages["aud_response"]);
             this.completed = true;
         }
     }

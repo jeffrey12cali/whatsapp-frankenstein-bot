@@ -1,7 +1,8 @@
 const { MessageMedia } = require("whatsapp-web.js");
 const { getMediaFormat, saveBase64, trim } = require("../utils/media-utils");
 const { Base } = require("./Base");
-const subProcess = require("child_process")
+const subProcess = require("child_process");
+const client_messages = require('../config/messages');
 
 formats = ["video", "audio", "ptt"];
 trim_path = "./trim";
@@ -50,27 +51,27 @@ _Ejemplo2_: !trim 00:00:12 00:00:34
                             }, 100);
                         }
                         catch (err) {
-                            msg.reply("Error al completar el trim.");
+                            msg.reply(client_messages["trim_not_completed"]);
                             console.error(err);
                         }
                     }
                     else {
-                        msg.reply("El tipo de media no es el adecuado.");
+                        msg.reply(client_messages["trim_media_not_valid"]);
                         this.completed = true;
                     }
                 }
                 else {
-                    msg.reply("El mensaje no contiene media.");
+                    msg.reply(client_messages["trim_no_media"]);
                     this.completed = true;
                 }
             }
             else {
-                msg.reply("No se ha respondido a ningún mensaje.");
+                msg.reply(client_messages["trim_no_msg_replied"]);
                 this.completed = true;
             }
         }
         else {
-            msg.reply("Sintaxis incorrecta.");
+            msg.reply(client_messages["trim_incorrect_syntax"]);
             this.completed = true;
         }
     }

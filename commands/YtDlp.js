@@ -3,6 +3,7 @@ const { Base } = require('./Base');
 const youtubesearchapi = require("youtube-search-api");
 const subProcess = require("child_process");
 const md5 = require("md5");
+const client_messages = require('../config/messages');
 
 const isTime1LongerThanTime2 = (time1, time2) => {
     const time1_list = time1.split(":");
@@ -47,7 +48,7 @@ const sendMedia = async (url, id, msg, mode) => {
     try {
         subProcess.exec(command, async (err, stdout, stderr) => {
             if (err) {
-                msg.reply("Error al ejecutar el comando.");
+                msg.reply(client_messages["ytdlp_error"]);
                 console.error(stderr);
             }
             else {
@@ -66,19 +67,19 @@ const sendMedia = async (url, id, msg, mode) => {
                         }
                         catch (err) {
                             console.error(err);
-                            msg.reply("Error al remover el contenido");
+                            msg.reply(client_messages["ytdlp_error_removing_content"]);
                         }
                     }, 100);
                 }
                 catch (err) {
-                    msg.reply("Error al enviar el contenido.");
+                    msg.reply(client_messages["ytdlp_error_sending_content"]);
                     console.error(err);
                 }
             }
         });
     }
     catch (err) {
-        msg.reply("Error al descargar media.");
+        msg.reply(client_messages["ytdlp_error_downloading_media"]);
         console.error(err);
     }
 }
@@ -97,7 +98,7 @@ class YtDlp extends Base {
                 msg = qtMsg;
             }
             else {
-                msg.reply("No se encontró ningún link.");
+                msg.reply(client_messages["ytdlp_no_links"]);
             }
         }
         if (query && query.length > 0) {
@@ -121,7 +122,7 @@ class YtDlp extends Base {
                     }
                 }
                 else {
-                    msg.reply("Este tío es tonto");
+                    msg.reply(client_messages["recurrent_error_msg"]);
                     this.completed = true;
                 }
                 try {
@@ -133,12 +134,12 @@ class YtDlp extends Base {
                         this.completed = true;
                     }
                     else {
-                        msg.reply("Video muy largo, prueba con otra búsqueda.");
+                        msg.reply(client_messages["ytdlp_long_video"]);
                         this.completed = true;
                     }
                 }
                 catch (err) {
-                    msg.reply("Error obteniendo detalles del video.");
+                    msg.reply(client_messages["ytdlp_error_obtaining_details"]);
                     console.error(err);
                 }
             }
@@ -151,12 +152,12 @@ class YtDlp extends Base {
                         this.completed = true;
                     }
                     else {
-                        msg.reply("Video muy largo, prueba con otra búsqueda.");
+                        msg.reply(client_messages["ytdlp_long_video"]);
                         this.completed = true;
                     }
                 }
                 catch (err) {
-                    msg.reply("Error buscando el video.");
+                    msg.reply(client_messages["ytdlp_error_finding_video"]);
                     console.error(err);
                 }
             }
@@ -166,13 +167,13 @@ class YtDlp extends Base {
                     this.completed = true;
                 }
                 catch (err) {
-                    msg.reply("Error descargando link de No Youtube.");
+                    msg.reply(client_messages["ytdlp_error_downloading_no_yt"]);
                     console.error(err);
                 }
             }
         }
         else {
-            msg.reply("No se especificaron los parámetros del comando.");
+            msg.reply(client_messages["ytdlp_no_params"]);
         }
     }
 }

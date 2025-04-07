@@ -1,4 +1,5 @@
 const { Base } = require('./Base');
+const client_messages = require('../config/messages');
 
 class Sticker extends Base {
 
@@ -26,12 +27,12 @@ _Ejemplo_: !sticker`;
                 }
             }
             else {
-                msg.reply('Este tío es tonto');
+                msg.reply(client_messages["recurrent_error_msg"]);
                 this.completed = true;
             }
         }
         else {
-            msg.reply('Responde la imagen o video con "!sticker"');
+            msg.reply(client_messages["sticker_validation"]);
             this.completed = true;
         }
     }
