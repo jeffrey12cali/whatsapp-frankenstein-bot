@@ -6,6 +6,7 @@
     "dependencies": {
         "biblia-interface": "^2.0.2",
         "booru": "^2.6.9",
+        "dotenv": "^16.4.7",
         "mariadb": "^3.4.0",
         "md5": "^2.3.0",
         "phone": "^3.1.53",

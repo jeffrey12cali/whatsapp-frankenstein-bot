@@ -1,15 +1,19 @@
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const mariadb = require('mariadb');
-const http = require('http');
+require('dotenv').config();
 
 // Local
 const { User } = require('./models/User');
 const commands = require('./commands');
-const {host, user, password, database} = require('./config/config');
 const blacklist = require('./config/blacklist');
 const client_messages = require('./config/messages');
 const { generateHelpText, generateTeque, verifyBlacklist } = require('./utils/utils');
+
+const host = process.env.DB_HOST;
+const user = process.env.DB_USER;
+const password = process.env.DB_PASSWORD;
+const database = process.env.DB_NAME;
 
 // Global constants
 const pool = mariadb.createPool({
@@ -23,6 +27,10 @@ const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
         executablePath: '/usr/bin/google-chrome-stable',
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+        ],
     }
 });
 
@@ -60,18 +68,25 @@ function runCommand(name, cmd_class, msg, parm_obj) {
     //console.log("Ending Command");
 }
 
-client.on('qr', qr => {
-    qrcode.generate(qr, {small: true}, function (qrcode) {
-        const server = http.createServer((req, res) => {
-            res.writeHead(200, { "Content-type": "text/plain" });
-            res.end(qrcode);
-        });
-        server.listen(3000, () => {
-            console.log(client_messages["server_running"]);
-            console.log(client_messages["refresh_reminder"]);
-        });
-    });
+// client.on('qr', qr => {
+//     qrcode.generate(qr, {small: true}, function (qrcode) {
+//         const server = http.createServer((req, res) => {
+//             res.writeHead(200, { "Content-type": "text/plain" });
+//             res.end(qrcode);
+//         });
+//         server.listen(3000, () => {
+//             console.log(client_messages["server_running"]);
+//             console.log(client_messages["refresh_reminder"]);
+//         });
+//         setTimeout(() => {
+//             server.close(() => console.log("Server on port 3000 closed successfully"))
+//         }, 21000);
+//     });
+//
+// });
 
+client.on('qr', (qr) => {
+    qrcode.generate(qr, {small: true});
 });
 
 client.on('ready', () => {

@@ -41,4 +41,4 @@ const client_messages = {
     "ytdlp_no_params": "No se especificaron los parámetros del comando.",
 }
 
-module.export = client_messages;
+module.exports = client_messages;

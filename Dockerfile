@@ -1,36 +1,39 @@
-# Use a Debian‑based Node image instead of Alpine for easier Chrome installation
-FROM node:22-slim
+FROM ubuntu:24.04
 
-# Install dependencies:
-#  - wget and gnupg2 to download and add Google's signing key
-#  - google-chrome-stable from Google's repository
-#  - ffmpeg, python3, and python3-pip for ffmpeg and yt-dlp
-RUN apt-get update && apt-get install -y \
-      wget \
-      gnupg2 && \
-    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
-    apt-get update && apt-get install -y \
-      google-chrome-stable \
-      ffmpeg \
-      python3 \
-      python3-pip && \
-    pip3 install yt-dlp && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Set working directory
+# Update, upgrade, and install dependencies
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y \
+      curl gnupg2 ca-certificates build-essential pkg-config \
+      libcairo2-dev libpango1.0-dev libpng-dev libgif-dev librsvg2-dev zlib1g-dev \
+      libjpeg-dev python3 wget ffmpeg
+
+# Install Node.js 22 (NodeSource)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+ && apt-get update && apt-get install -y nodejs
+
+# Install Google Chrome stable
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+ && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" \
+    > /etc/apt/sources.list.d/google-chrome.list \
+ && apt-get update && apt-get install -y google-chrome-stable \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Download the latest yt-dlp binary from GitHub and move it to /usr/local/bin
+RUN wget -q https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -O /usr/local/bin/yt-dlp && \
+    chmod a+rx /usr/local/bin/yt-dlp
+
 WORKDIR /app
 
-# Copy package files and install node dependencies
+# Copy and install Node dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy your app source code
+# Copy your app code
 COPY . .
 
-# Expose port 3000 for your Node.js app
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "start"]
+CMD ["bash", "./run.sh"]
 

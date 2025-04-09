@@ -1,14 +1,15 @@
-version: "3.8"
 services:
   app:
     build: .
     ports:
       - "3000:3000"
-    environment:
-      - DB_HOST=mariadb
-      - DB_USER=your_db_user
-      - DB_PASS=your_db_password
-      - DB_NAME=your_db_name
+    volumes:
+      - ./config:/app/config
+      - ./video:/app/video
+      - ./audio:/app/audio
+      - ./texts:/app/texts
+      - wwebjs_auth:/app/.wwebjs_auth
+      - wwebjs_cache:/app/.wwebjs_cache
     depends_on:
       - mariadb
 
@@ -16,13 +17,18 @@ services:
     image: mariadb:latest
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=your_root_password
-      - MYSQL_DATABASE=your_db_name
-      - MYSQL_USER=your_db_user
-      - MYSQL_PASSWORD=your_db_password
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - mariadb_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    command:
+      - "--wait-timeout=28800"
 
 volumes:
+  wwebjs_auth:
+  wwebjs_cache:
   mariadb_data:
 
