@@ -4,8 +4,6 @@ video-output
 .wwebjs_auth
 .wwebjs_cache
 package-lock.json
-config/config.js
-config/blacklist.js
 config/messages_custom.js
 examples
 logs/*

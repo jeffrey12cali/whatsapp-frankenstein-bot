@@ -1,0 +1,37 @@
+services:
+  app:
+    image: jeffrey12cali/whatsapp-frankenstein-bot:latest
+    environment:
+      DB_HOST: mariadb
+      DB_USER: user
+      DB_PASSWORD: pass
+      DB_NAME: wpp_frank_bot
+    volumes:
+      - /path/to/config:/app/config
+      - /path/to/video:/app/video
+      - /path/to/audio:/app/audio
+      - /path/to/audiotexts:/app/texts
+      - wwebjs_auth:/app/.wwebjs_auth
+      - wwebjs_cache:/app/.wwebjs_cache
+    depends_on:
+      - mariadb
+
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: wpp_frank_bot
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - /path/to/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command:
+      - "--wait-timeout=28800"
+
+volumes:
+  wwebjs_auth:
+  wwebjs_cache:
+  mariadb_data:
+
