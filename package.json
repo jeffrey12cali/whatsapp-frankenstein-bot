@@ -5,14 +5,17 @@
     },
     "dependencies": {
         "biblia-interface": "^2.0.2",
-        "booru": "^2.6.9",
-        "dotenv": "^16.4.7",
-        "mariadb": "^3.4.0",
+        "booru": "^2.8.1",
+        "dotenv": "^17.0.0",
+        "mariadb": "^3.4.2",
         "md5": "^2.3.0",
-        "phone": "^3.1.53",
+        "phone": "^3.1.62",
         "qrcode-terminal": "^0.12.0",
         "text-to-image": "^7.0.1",
-        "whatsapp-web.js": "^1.27.0",
-        "youtube-search-api": "^1.2.2"
+        "whatsapp-web.js": "^1.31.0",
+        "youtube-search-api": "^2.0.0"
+    },
+    "devDependencies": {
+        "npm-check-updates": "^18.0.1"
     }
 }
