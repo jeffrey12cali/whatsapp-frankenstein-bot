@@ -233,6 +233,12 @@ client.on('message', async (msg) => {
             else if (msg.body == '!imgvid') {
                 runCommand("ImgVid", commands.ImgVid, msg);
             }
+            else if (msg.body == '!vid help') {
+                runCommand("Vid_Help", commands.Vid_Help, msg);
+            }
+            else if (msg.body.startsWith('!vid ')) {
+                runCommand("Vid", commands.Vid, msg);
+            }
             else if (msg.body == '!chat help') {
                 runCommand("Chat_Help", commands.Chat_Help, msg);
             }

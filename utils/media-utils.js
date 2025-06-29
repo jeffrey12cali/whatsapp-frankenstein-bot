@@ -68,3 +68,15 @@ module.exports.getMediaFormat = function(type) {
             throw new Error("El formato no se encuentra registrado.");
     }
 }
+
+module.exports.changeVideoSpeed = async function(filename, path, speed) {
+    const videoRate = (1 / speed).toFixed(2);
+    const atempoFilters = [];
+    let remaining = speed;
+    while (remaining > 2.0) { atempoFilters.push('atempo=2.0'); remaining /= 2.0; }
+    while (remaining < 0.5) { atempoFilters.push('atempo=0.5'); remaining *= 2.0; }
+    atempoFilters.push(`atempo=${remaining.toFixed(2)}`);
+    const atempo = atempoFilters.join(',');
+    let command = `ffmpeg -i ${path}/${filename} -filter_complex "[0:v]setpts=${videoRate}*PTS[v];[0:a]${atempo}[a]" -map "[v]" -map "[a]" ${path}/speed_${filename}`;
+    return mediaCommandsCore(command, `speed_${filename}`, '');
+}

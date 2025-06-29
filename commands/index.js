@@ -17,5 +17,6 @@ const { Aud, Aud_Help } = require('./Aud');
 const { ImgVid, ImgVid_Help } = require('./ImgVid');
 const { Chat, Chat_Help } = require('./Chat');
 const { Everyone, Everyone_Help } = require('./Everyone');
+const { Vid, Vid_Help } = require('./Vid');
 
-module.exports = { Context, Test, Test_Help, Base, Blank, Booru, Booru_List, Booru_Help, Booru_List_Help, Chef, Chef_Help, Help, Photo, Photo_Help, Sticker, Sticker_Help, YtAud, YtAud_Help, PalAdmin, PalAdmin_Help, YtVid, YtVid_Help, VideoSender, VideoSender_Help, AudioSender, AudioSender_Help, Trim, Trim_Help, Aud, Aud_Help, ImgVid, ImgVid_Help, Chat, Chat_Help, Everyone, Everyone_Help }
+module.exports = { Context, Test, Test_Help, Base, Blank, Booru, Booru_List, Booru_Help, Booru_List_Help, Chef, Chef_Help, Help, Photo, Photo_Help, Sticker, Sticker_Help, YtAud, YtAud_Help, PalAdmin, PalAdmin_Help, YtVid, YtVid_Help, VideoSender, VideoSender_Help, AudioSender, AudioSender_Help, Trim, Trim_Help, Aud, Aud_Help, ImgVid, ImgVid_Help, Chat, Chat_Help, Everyone, Everyone_Help, Vid, Vid_Help }

@@ -39,6 +39,11 @@ const client_messages = {
     "ytldp_error_finding_video": "Error buscando el video.",
     "ytdlp_error_downloading_no_yt": "Error descargando link de No Youtube.",
     "ytdlp_no_params": "No se especificaron los parámetros del comando.",
+    "vid_invalid_speed": "Velocidad inválida.",
+    "vid_incorrect_syntax": "Sintaxis incorrecta.",
+    "vid_no_msg_replied": "No se ha respondido a ningún mensaje.",
+    "vid_no_media": "El mensaje no contiene media.",
+    "vid_media_not_valid": "El tipo de media no es un video.",
 }
 
 module.exports = client_messages;
