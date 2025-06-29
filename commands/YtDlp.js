@@ -15,18 +15,22 @@ const isTime1LongerThanTime2 = (time1, time2) => {
     else if (time1_list.length < time2_list.length) {
         return false;
     }
-    else if (time1_list.length = time2_list.length) {
+    else if (time1_list.length === time2_list.length) {
         for (let i = 0; i < time1_list.length; i++) {
-            if (time1_list[i] = time2_list[i]) {
+            if (parseInt(time1_list[i]) === parseInt(time2_list[i])) {
                 continue;
             }
-            if (time1_list[i] > time2_list[i]) {
+            if (parseInt(time1_list[i]) > parseInt(time2_list[i])) {
                 return true;
             }
             else {
-                return false
+                return false;
             }
         }
+        return false;
+    }
+    else {
+        return false;
     }
 }
 
