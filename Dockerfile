@@ -33,7 +33,14 @@ RUN npm install
 # Copy your app code
 COPY . .
 
+# Prevent Node Module Version Errors
+RUN npm rebuild --unsafe-perm
+
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 EXPOSE 3000
 
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["bash", "./run.sh"]
 
