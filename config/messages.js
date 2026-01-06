@@ -36,7 +36,7 @@ const client_messages = {
     "ytdlp_no_links": "No se encontró ningún link.",
     "ytdlp_long_video": "Video muy largo, prueba con otra búsqueda.",
     "ytdlp_error_obtaining_details": "Error obteniendo detalles del video.",
-    "ytldp_error_finding_video": "Error buscando el video.",
+    "ytdlp_error_finding_video": "Error buscando el video.",
     "ytdlp_error_downloading_no_yt": "Error descargando link de No Youtube.",
     "ytdlp_no_params": "No se especificaron los parámetros del comando.",
     "vid_invalid_speed": "Velocidad inválida.",

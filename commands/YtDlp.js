@@ -1,50 +1,97 @@
 const { MessageMedia } = require('whatsapp-web.js');
 const { Base } = require('./Base');
-const youtubesearchapi = require("youtube-search-api");
 const subProcess = require("child_process");
+const fs = require('fs');
+const path = require('path');
 const md5 = require("md5");
 const client_messages = require('../config/messages');
 
-const isTime1LongerThanTime2 = (time1, time2) => {
-    const time1_list = time1.split(":");
-    const time2_list = time2.split(":");
+const MATCH_FILTER = '!is_live & duration < 600';
+const MATCH_FILTER_CLI = `--match-filter "${MATCH_FILTER}"`;
+const JS_RUNTIME_ARGS = ['--js-runtimes', 'node'];
+const DOCKER_COOKIES_PATH = path.resolve('/app/config/cookies.txt');
+const LOCAL_COOKIES_PATH = path.resolve(__dirname, '../config/cookies.txt');
+const COOKIE_CANDIDATE_PATHS = [DOCKER_COOKIES_PATH, LOCAL_COOKIES_PATH];
 
-    if (time1_list.length > time2_list.length) {
-        return true;
-    }
-    else if (time1_list.length < time2_list.length) {
-        return false;
-    }
-    else if (time1_list.length === time2_list.length) {
-        for (let i = 0; i < time1_list.length; i++) {
-            if (parseInt(time1_list[i]) === parseInt(time2_list[i])) {
-                continue;
-            }
-            if (parseInt(time1_list[i]) > parseInt(time2_list[i])) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        return false;
-    }
-    else {
-        return false;
-    }
+const resolveCookiesPath = () => COOKIE_CANDIDATE_PATHS.find(candidate => fs.existsSync(candidate));
+
+const getCookiesArgs = () => {
+    const cookiesPath = resolveCookiesPath();
+    return cookiesPath ? ['--cookies', cookiesPath] : [];
 }
 
-const sendMedia = async (url, id, msg, mode) => {
+const getCookiesCliSegment = () => {
+    const cookiesPath = resolveCookiesPath();
+    return cookiesPath ? `--cookies "${cookiesPath}"` : '';
+}
+
+const buildCommonArgs = (applyFilters = false) => {
+    const args = [
+        ...JS_RUNTIME_ARGS,
+        ...getCookiesArgs()
+    ];
+    if (applyFilters) {
+        args.push('--match-filter', MATCH_FILTER);
+    }
+    return args;
+}
+
+const buildCommonCliSegment = (applyFilters = false) => {
+    const segments = [
+        `${JS_RUNTIME_ARGS[0]} ${JS_RUNTIME_ARGS[1]}`
+    ];
+    const cookiesSegment = getCookiesCliSegment();
+    if (cookiesSegment) {
+        segments.push(cookiesSegment);
+    }
+    if (applyFilters) {
+        segments.push(MATCH_FILTER_CLI);
+    }
+    return segments.filter(Boolean).join(' ');
+}
+
+const searchFilteredVideoId = (query) => {
+    return new Promise((resolve, reject) => {
+        const args = [
+            ...buildCommonArgs(false),
+            `ytsearch1:${query}`,
+            '--match-filter',
+            MATCH_FILTER,
+            '--print',
+            'id',
+            '--skip-download',
+            '--no-warnings'
+        ];
+        subProcess.execFile('yt-dlp', args, (error, stdout, stderr) => {
+            if (error) {
+                const errOutput = stderr ? stderr.toString() : error.message;
+                if (errOutput && (errOutput.includes('No video matches') || errOutput.includes('does not pass filter'))) {
+                    return resolve(null);
+                }
+                return reject(error);
+            }
+            const id = stdout ? stdout.toString().trim().split('\n').filter(Boolean).pop() : null;
+            resolve(id || null);
+        });
+    });
+}
+
+const sendMedia = async (url, id, msg, mode, options = {}) => {
     console.log(id);
+    const {
+        applyFilters = false,
+        cleanupDelayMs = 100
+    } = options;
+    const commonSegment = buildCommonCliSegment(applyFilters);
     let command, media_folder, format;
     switch (mode) {
         case 'video':
-            command = `yt-dlp -S "vcodec:h264,res:480,ext:mp4" -o "./video-output/${id}.mp4" ${url}`;
+            command = `yt-dlp ${commonSegment} -S "vcodec:h264,res:480,ext:mp4" -o "./video-output/${id}.mp4" ${url}`;
             media_folder = 'video-output';
             format = 'mp4';
             break;
         case 'audio':
-            command = `yt-dlp --extract-audio --audio-format mp3 -o "./audio-output/${id}.mp3" ${url}`;
+            command = `yt-dlp ${commonSegment} --extract-audio --audio-format mp3 -o "./audio-output/${id}.mp3" ${url}`;
             media_folder = 'audio-output';
             format = 'mp3'
             break;
@@ -52,8 +99,14 @@ const sendMedia = async (url, id, msg, mode) => {
     try {
         subProcess.exec(command, async (err, stdout, stderr) => {
             if (err) {
-                msg.reply(client_messages["ytdlp_error"]);
-                console.error(stderr);
+                const errorOutput = stderr ? stderr.toString() : err.message;
+                if (applyFilters && errorOutput && errorOutput.includes('does not pass filter')) {
+                    msg.reply(client_messages["ytdlp_long_video"]);
+                }
+                else {
+                    msg.reply(client_messages["ytdlp_error"]);
+                }
+                console.error(errorOutput);
             }
             else {
                 try {
@@ -73,7 +126,7 @@ const sendMedia = async (url, id, msg, mode) => {
                             console.error(err);
                             msg.reply(client_messages["ytdlp_error_removing_content"]);
                         }
-                    }, 100);
+                    }, cleanupDelayMs);
                 }
                 catch (err) {
                     msg.reply(client_messages["ytdlp_error_sending_content"]);
@@ -86,6 +139,11 @@ const sendMedia = async (url, id, msg, mode) => {
         msg.reply(client_messages["ytdlp_error_downloading_media"]);
         console.error(err);
     }
+}
+
+const helpers = {
+    searchFilteredVideoId,
+    sendMedia
 }
 
 // Hay un error con el completed porque una parte del código es asíncrona y no alcanza a tomar el valor de completed en true.
@@ -129,30 +187,14 @@ class YtDlp extends Base {
                     msg.reply(client_messages["recurrent_error_msg"]);
                     this.completed = true;
                 }
-                try {
-                    console.log(id);
-                    const res = await youtubesearchapi.GetVideoDetails(id);
-                    // Need to modify youtube-search-api to give information about video length
-                    if (res && isYoutubeShortUrl || res && !res.isLive) {
-                        sendMedia(query, id, msg, mode);
-                        this.completed = true;
-                    }
-                    else {
-                        msg.reply(client_messages["ytdlp_long_video"]);
-                        this.completed = true;
-                    }
-                }
-                catch (err) {
-                    msg.reply(client_messages["ytdlp_error_obtaining_details"]);
-                    console.error(err);
-                }
+                helpers.sendMedia(query, id, msg, mode, { applyFilters: true });
+                this.completed = true;
             }
             else if (query.match(/\S+\.[^()\d]+(?:\([^)]*\))*/) == null) {
                 try {
-                    const res = await youtubesearchapi.GetListByKeyword(query, false, 5, [{type: "video"}]);
-                    if (res && res.items.length > 0 && !res.items[0].isLive && !isTime1LongerThanTime2(res.items[0].length.simpleText, "10:00")) {
-                        let id = res.items[0].id;
-                        sendMedia(`https://www.youtube.com/watch?v=${id}`, id, msg, mode);
+                    const id = await helpers.searchFilteredVideoId(query);
+                    if (id) {
+                        helpers.sendMedia(`https://www.youtube.com/watch?v=${id}`, id, msg, mode, { applyFilters: true });
                         this.completed = true;
                     }
                     else {
@@ -167,7 +209,7 @@ class YtDlp extends Base {
             }
             else {
                 try {
-                    sendMedia(msg.links[0].link, md5(msg.links[0].link), msg, mode);
+                    helpers.sendMedia(msg.links[0].link, md5(msg.links[0].link), msg, mode);
                     this.completed = true;
                 }
                 catch (err) {
@@ -182,4 +224,4 @@ class YtDlp extends Base {
     }
 }
 
-module.exports = { YtDlp };
+module.exports = { YtDlp, helpers, MATCH_FILTER, MATCH_FILTER_CLI };
