@@ -33,6 +33,9 @@ RUN npm install
 # Copy your app code
 COPY . .
 
+# logs/ is gitignored, so it is absent from clean checkouts
+RUN mkdir -p /app/logs
+
 # Prevent Node Module Version Errors
 RUN npm rebuild --unsafe-perm
 
