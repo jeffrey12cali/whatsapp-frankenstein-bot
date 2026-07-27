@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Update, upgrade, and install dependencies
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y \
-      curl gnupg2 ca-certificates build-essential pkg-config \
+      curl git gnupg2 ca-certificates build-essential pkg-config \
       libcairo2-dev libpango1.0-dev libpng-dev libgif-dev librsvg2-dev zlib1g-dev \
       libjpeg-dev python3 wget ffmpeg
 
