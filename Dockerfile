@@ -27,7 +27,9 @@ RUN wget -q https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -O 
 WORKDIR /app
 
 # Copy and install Node dependencies
+# patches/ must land before npm install so the postinstall hook can apply it
 COPY package*.json ./
+COPY patches ./patches
 RUN npm install
 
 # Copy your app code
