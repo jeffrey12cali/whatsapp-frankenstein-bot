@@ -13,7 +13,7 @@
         "phone": "^3.1.67",
         "qrcode-terminal": "^0.12.0",
         "text-to-image": "^7.0.1",
-        "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#main"
+        "whatsapp-web.js": "github:wwebjs/whatsapp-web.js#main"
     },
     "devDependencies": {
         "jest": "^30.2.0",
