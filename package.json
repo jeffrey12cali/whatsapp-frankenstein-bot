@@ -2,7 +2,8 @@
     "main": "index.js",
     "scripts": {
         "start": "node index.js",
-        "test": "jest"
+        "test": "jest",
+        "postinstall": "patch-package"
     },
     "dependencies": {
         "biblia-interface": "^2.0.2",
@@ -17,6 +18,7 @@
     },
     "devDependencies": {
         "jest": "^30.2.0",
-        "npm-check-updates": "^18.1.1"
+        "npm-check-updates": "^18.1.1",
+        "patch-package": "^8.0.0"
     }
 }
