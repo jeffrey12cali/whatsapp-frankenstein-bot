@@ -6,6 +6,9 @@ log() { echo "[entrypoint] $*"; }
 STAMP_DIR="/var/cache/auto-updates"
 mkdir -p "$STAMP_DIR"
 
+# ffmpeg does not create output dirs; yt-dlp only does for its own downloads
+mkdir -p video-output audio-output
+
 # Throttle update frequency (defaults: 24h)
 YTDLP_UPDATE_INTERVAL_SECONDS="${YTDLP_UPDATE_INTERVAL_SECONDS:-86400}"
 CHROME_UPDATE_INTERVAL_SECONDS="${CHROME_UPDATE_INTERVAL_SECONDS:-86400}"

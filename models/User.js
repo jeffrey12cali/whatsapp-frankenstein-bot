@@ -27,22 +27,25 @@ class User {
 
     async setUser(num, contact) {
         let conn;
-        const num_info = validatePhoneNumber(num);
-        if (num_info.isValid) {
-            const name = contact.pushname;
-            try {
-                conn = await this.#pool.getConnection();
-                const res = await conn.query("INSERT INTO USER (num, prefix, iso3, country, name) VALUE (?, ?, ?, ?, ?)", [num, num_info.countryCode.slice(1), num_info.countryIso3, countryListAlpha3[num_info.countryIso3], name]);
-            }
-            catch (err) {
-                console.log(err)
-            }
-            finally {
-                if (conn) return conn.end();
-            }
+        if (num == null) {
+            return;
         }
-        else {
+        const num_info = validatePhoneNumber(num);
+        if (!num_info.isValid) {
             console.log("Number not valid");
+        }
+        const prefix = num_info.isValid ? num_info.countryCode.slice(1) : '';
+        const iso3 = num_info.isValid ? num_info.countryIso3 : '';
+        const country = num_info.isValid ? countryListAlpha3[num_info.countryIso3] : 'unknown';
+        try {
+            conn = await this.#pool.getConnection();
+            const res = await conn.query("INSERT INTO USER (num, prefix, iso3, country, name) VALUE (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name = VALUES(name)", [num, prefix, iso3, country, contact.pushname]);
+        }
+        catch (err) {
+            console.log(err)
+        }
+        finally {
+            if (conn) return conn.end();
         }
     }
 
@@ -91,7 +94,7 @@ class User {
         const contact = await getAuthorContact(msg);
         const num = contact.number;
         const query_res = await this.getUser(num);
-        if (query_res.length == 0) {
+        if (!query_res || query_res.length == 0) {
             this.setUser(num, contact)
         }
         else if (query_res.length == 1) {
