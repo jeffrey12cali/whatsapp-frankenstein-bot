@@ -10,6 +10,7 @@ module.exports.doLog = async function (msg) {
 
 module.exports.writeLog = async function (line) {
     try {
+        await fs.mkdir('./logs', { recursive: true });
         await fs.writeFile('./logs/log.txt', line, { flag: 'a' });
     } catch (err) {
         console.log(err);

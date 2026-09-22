@@ -17,9 +17,9 @@ class Context {
     async startCommand(msg, obj) {
         doLog(msg);
         //console.log("Loggin user");
-        this.#user.logUser(msg);
+        await this.#user.logUser(msg);
         //console.log("Storing chat on db");
-        this.#user.setChat(msg);
+        await this.#user.setChat(msg);
         //console.log("Reading command: " + msg.body);
         console.log(msg.body);
         try {
